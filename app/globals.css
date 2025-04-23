@@ -24,3 +24,45 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+.friend-scroll::-webkit-scrollbar {
+  width: 4px;
+  height:2px;
+}
+
+.friend-scroll::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.friend-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+@keyframes popIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  } 
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-popIn {
+  animation: popIn 0.3s ease-out forwards;
+}
+
+.search-scroll::-webkit-scrollbar{
+  /* background-color: rgb(123, 247, 65); */
+  width: 4px ;
+  height: 4px;
+
+}
+.search-scroll::-webkit-slider-thumb{
+background-color: rgb(247, 126, 126);
+
+}
+.search-scroll::-webkit-scrollbar-track{
+background: transparent;
+
+}
