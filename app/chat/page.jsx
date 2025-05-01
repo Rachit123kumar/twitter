@@ -5,7 +5,7 @@ import FriendList from '../_components/FriendList'
 import SelectedChat from '../_components/SelectedChat'
 import SearchComponent from '../_components/SearchComponent'
 import Image from 'next/image'
-import accountImage from "@/public/profile1.jpg"
+import accountImage from "./../../public/profile1.jpg"
 import { useSession } from 'next-auth/react'
 import { useSelector } from "react-redux"
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
@@ -42,8 +42,8 @@ export default function Chat() {
       return
     }
 
-    // const wss=new WebSocket(`ws://localhost:3005/?userId=${data.user.id}`)
-    const wss=new WebSocket(`wss://watsappbackend.learngames.shop/?userId=${data.user.id}`)
+    const wss=new WebSocket(`ws://localhost:3005/?userId=${data.user.id}`)
+    // const wss=new WebSocket(`wss://watsappbackend.learngames.shop/?userId=${data.user.id}`)
 
     wss.onopen=()=>{
       console.log('connecction established')

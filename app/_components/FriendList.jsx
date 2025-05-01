@@ -76,12 +76,10 @@ useEffect(()=>{
         return
       }
 
-      const friends = await axios.get(`https://watsappbackend.learngames.shop/user/all`, {
-        params: {
-          userId: user.id
-        }
-      })
-      setFriends(friends.data)
+      // const response = await fetch(`https://watsappbackend.learngames.shop/user/all?userId=${user.id}`);
+      const response = await fetch(`http://localhost:3005/user/all?userId=${user.id}`);
+      const data = await response.json();
+      setFriends(data)
       // console.log(friends.data, "from FriendList")
     }
     getUser()

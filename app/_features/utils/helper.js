@@ -1,5 +1,6 @@
 // import { URL } from "@/app/_components/SelectedChat"
-import { PORT } from "@/app/_components/FriendList"
+import { PORT } from "../../_components/FriendList"
+// import { PORT } from "///../_components/FriendList"
 import { useQuery } from "@tanstack/react-query"
 import axios from "axios"
 
