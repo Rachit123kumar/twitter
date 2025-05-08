@@ -1,5 +1,5 @@
 "use client"
-import React from 'react'
+import React, { createContext, useContext, useState } from 'react'
 import { SessionProvider } from "next-auth/react"
 import {
 
@@ -15,7 +15,17 @@ const queryClient = new QueryClient()
 
 import { ToastContainer } from 'react-toastify';
 import { store } from '../_features/store/store'
+
+
+
+const UserContext=createContext();
+
+
+
+
 export default function Providers({ children }) {
+  const [user,setUser]=useState(null);
+
 
 
 
@@ -27,8 +37,10 @@ export default function Providers({ children }) {
         <Provider store={store}>
 
         <QueryClientProvider client={queryClient}>
-
+<UserContext.Provider  value={{user,setUser}}>
+  
           {children}
+</UserContext.Provider>
           <ReactQueryDevtools initialIsOpen={false}/>
         </QueryClientProvider>
         </Provider>
@@ -37,4 +49,9 @@ export default function Providers({ children }) {
       </SessionProvider>
     </div>
   )
+}
+
+
+export function useUser(){
+  return useContext(UserContext)
 }

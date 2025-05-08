@@ -3,7 +3,7 @@ import { FaPlus } from 'react-icons/fa'
 
 import { AiFillDelete } from "react-icons/ai";
 import PollLength from './PollLwngth';
-export default function Poll({ setPostType,Question,setQuestion,option,setOptions }) {
+export default function Poll({ setPostType,Question,setQuestion,option,setOptions,min ,setMins, hour, setHour, days, setDays}) {
 
 
 
@@ -66,15 +66,15 @@ export default function Poll({ setPostType,Question,setQuestion,option,setOption
 
           <div className='pt-0.5 bg-white rounded-md'>
 
-            <PollLength Arra={Days} title={"Days"} />
+            <PollLength Arra={Days} title={"Days"}  varm={days} setVar={setDays}/>
           </div>
           <div className='pt-0.5 bg-white rounded-md'>
 
-            <PollLength Arra={Hours} title={"hous"} />
+            <PollLength Arra={Hours} title={"hous"}   varm={hour} setVar={setHour}/>
           </div>
           <div className='pt-0.5 bg-white rounded-md hidden md:block' >
 
-            <PollLength Arra={minutes} title={"minutes"} />
+            <PollLength Arra={minutes} title={"minutes"} varm={min} setVar={setMins}/>
           </div>
         </div>
 

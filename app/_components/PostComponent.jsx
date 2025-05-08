@@ -9,40 +9,54 @@ import ImagePreview from './ImagePreview';
 import Poll from './Poll';
 import { useSession } from 'next-auth/react';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
-
+import { ClipLoader, FadeLoader, ScaleLoader } from "react-spinners"
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
+import dataURItoBlob from '../_features/dataURItoBlob';
+import { useUser } from './Providers';
+
 
 export default function PostComponent() {
   const [picker, setPicker] = useState(false);
   const textRef = useRef()
 
-  const router=useRouter()
+  const router = useRouter()
 
   const [text, setText] = useState('')
+  const [mediasUploaded,setMediaUploaded]=useState([])
   const [cursorPosition, setCursorPositon] = useState('')
   const [images, setImages] = useState([])
   const imageInputRef = useRef()
   const [postType, setPostType] = useState('image');
+  const [loading, setLoading] = useState(false);
+  const [days, setDays] = useState(1)
+  const [hour, setHour] = useState(0)
+  const [min, setMins] = useState(0)
+
+
 
   // for Poll 
-  const [Question,setQuestion]=useState('');
+  const [Question, setQuestion] = useState('');
 
   const [option, setOptions] = useState([
     '', ''
 
   ])
 
-  const {data,status}=useSession();
+  const { data, status } = useSession();
+  const {user,setUser}=useUser()
 
 
-useEffect(()=>{
-  if(status=='unauthenticated'){
-    router.push('/auth/signin')
-  }
+  useEffect(() => {
+    if (status == 'unauthenticated') {
+      router.push('/auth/signin')
+    }if(status==="authenticated"){
+      setUser(data)
+      
+    }
 
-},[status])
-  
+  }, [status])
+
 
 
 
@@ -52,31 +66,44 @@ useEffect(()=>{
 
 
 
-  async function submitPost(){
+  async function submitPost() {
+    setLoading(true)
 
-    if(postType==='poll'){
+    if (postType === 'poll') {
 
-      if(!Question){
+      if (!Question) {
         alert("No question please type question")
       }
-    
 
-      const opt=[];
-      option.forEach((el,i)=>{
-        if(el.length>0){
+
+      const opt = [];
+      option.forEach((el, i) => {
+        if (el.length > 0) {
           opt.push(el)
         }
       })
       console.log(opt)
+      if(!(opt.length>=2)){
+        alert (" please give us options");
+        setLoading(false)
+        return
+      }
 
-      const res=await axios.post('/api/post',{
-      email:"12arabittu@gmail.com",
-      question:Question,
-      option:option
-      
+      const res = await axios.post('/api/post', {
+        email: data?.user.email,
+        question: Question,
+        option: opt,
+        type: "poll",
+        expiresIn:{
+          days,
+          min,
+          hour
+        }
+
 
       })
       console.log(res)
+      setLoading(false);
 
 
 
@@ -84,15 +111,82 @@ useEffect(()=>{
 
 
 
+
+    }else if(postType==='image'){
+      // take images link , text and 
+      if (images.length > 0) {
+        const postImages = images.map((img) => dataURItoBlob(img.src));
+      
+        const formData = new FormData();
+        formData.append("path", "bittukumar12/posts");
+      
+        postImages.forEach((blob) => {
+          formData.append("files", blob); // backend expects "files"
+        });
+      
+        try {
+          setLoading(true);
+      
+          const res = await axios.post("/api/uploadfile", formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+            // onUploadProgress: (e) => {
+            //   const percentCompleted = Math.round((e.loaded * 100) / e.total);
+            //   setPercent(percentCompleted);
+            // },
+          });
+      
+          // Prepare media array for MongoDB
+          const media = res.data.uploaded.map((img, i) => ({
+            url: img.url,
+            type: images[i]?.type || "image", // fallback to image
+          }));
+      
+          console.log("Media array to send to backend:", media);
+          const res2=await axios.post('/api/post',{
+            email:data?.user.email,
+            text,
+            media,
+            type:'CONTENT'
+
+          })
+          console.log(res2)
+      
+          // Now you can POST this media array with your tweet
+          // await axios.post("/api/tweet", { content, media, ... });
+      
+          setLoading(false);
+        } catch (err) {
+          console.error("Upload failed:", err.message);
+          setLoading(false);
+        }
+      }else{
+        setLoading(true)
+        const res2=await axios.post('/api/post',{
+          email:data?.user.email,
+          text,
+        
+          type:'CONTENT'
+
+        })
+        console.log(res2)
+        setLoading(true)
+      }
+      
+          
     }
+    
+
+    setLoading(false)
   }
 
 
 
-  if(status=="loading"){
+  if (status == "loading") {
     return <div className='flex items-center justify-center h-10'>
-      <AiOutlineLoading3Quarters className='animate-spin text-white font-bold size-5'/>
-      </div>
+      <AiOutlineLoading3Quarters className='animate-spin text-white font-bold size-5' />
+    </div>
 
   }
 
@@ -106,16 +200,16 @@ useEffect(()=>{
         <img src={"/my.png"} className='h-10 w-10 rounded-full' />
         <div className='text-blue-500 flex-grow'>
           {postType == 'image' &&
-          <>
-          <textarea ref={textRef} type="text" value={text} onChange={(e) => { setText(e.target.value) }} placeholder='What is happening?' className='text-white resize-none w-full border-none outline-none py-2 text-xl flex-grow' />
-          
-          
-          <ImagePreview imageInputRef={imageInputRef} images={images} setImages={setImages} /> 
-          </>
+            <>
+              <textarea ref={textRef} type="text" value={text} onChange={(e) => { setText(e.target.value) }} placeholder='What is happening?' className='text-white resize-none w-full border-none outline-none py-2 text-xl flex-grow' />
+
+
+              <ImagePreview imageInputRef={imageInputRef} images={images} setImages={setImages} />
+            </>
           }
 
           {
-            postType =='poll' && <Poll setPostType={setPostType} Question={Question} setQuestion={setQuestion} option={option} setOptions={setOptions}/>
+            postType == 'poll' && <Poll setPostType={setPostType} Question={Question} setQuestion={setQuestion} option={option} setOptions={setOptions} min={min} setMins={setMins} hour={hour} setHour={setHour} days={days} setDays={setDays}/>
           }
 
 
@@ -127,14 +221,14 @@ useEffect(()=>{
 
         <div className='flex items-center justify-center  gap-x-3 border-white mt-2 '>
 
-          <button  disabled={postType=='poll'} className=''  onClick={() => {
+          <button disabled={postType == 'poll'} className='' onClick={() => {
             setPostType('image')
             imageInputRef.current.click()
             return;
 
           }
 
-          }><span><MdImage className={` cursor-pointer ${postType=='poll' ? 'fill-blue-200 cursor-none': "fill-blue-500"} ` }/></span></button>
+          }><span><MdImage className={` cursor-pointer ${postType == 'poll' ? 'fill-blue-200 cursor-none' : "fill-blue-500"} `} /></span></button>
 
 
           <button><span><FaSquarePollHorizontal className='fill-blue-500 cursor-pointer' onClick={() => {
@@ -166,7 +260,8 @@ useEffect(()=>{
 
         <div>
 
-          <button className='px-4 py-2 bg-white text-black rounded-full' onClick={submitPost}>Post</button>
+          <button className='px-4 py-2 bg-white text-black rounded-full' onClick={submitPost} disabled={loading}>{loading ? <AiOutlineLoading3Quarters className='size-5 text-black animate-spin ' /> : "Post"}</button>
+
 
         </div>
       </div>

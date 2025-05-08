@@ -8,6 +8,11 @@ const TweetSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
+  kind:{
+    type:String,
+    enum:['CONTENT','POLL']
+
+  },
   media: [
     {
       url: { type: String },
@@ -17,16 +22,14 @@ const TweetSchema = new mongoose.Schema({
   poll: {
     Question: {
       type: String,
-      required: true,
+      // required: true,
     },
     options: [
-      {
-        text: { type: String, required: true },
-      },
+     String
     ],
     expiresAt: {
       type: Date,
-      required: true,
+      // required: true,
     },
   },
   hastags:[{type:String}],

@@ -4,7 +4,7 @@ import dataURItoBlob from '../_features/dataURItoBlob';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
 
-export default function ImagePreview({ images, setImages, imageInputRef }) {
+export default function ImagePreview({ images, setImages, text,imageInputRef }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [uploading,setUploading]=useState(false);
   const [percent,setPercent]=useState(0);
@@ -14,12 +14,12 @@ export default function ImagePreview({ images, setImages, imageInputRef }) {
 
 
 
-
   const {data,status}=useSession()
 
 
   useEffect(()=>{
-    console.log(data);
+    
+  
     
 
   },[status])
@@ -58,26 +58,41 @@ export default function ImagePreview({ images, setImages, imageInputRef }) {
       formData.append("path","bittukumar12/posts")
       postImages.forEach((img)=>{
 
-        formData.append("file",img)
+        formData.append("files",img)
       })
-      try{
+  
 
-      //   const res=await axios.post(`http://localhost:8080/uploadfile`,
-      //     formData,
-          
-      //  {
-      //    headers:{
-      //     "Content-Type":"multipart/form-data"
-      //   }
-      // })
-      // console.log(res)
+        const res = await axios.post("/api/uploadfile", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+         
+        });
+      console.log(res)
+
+    const media=res.data.uploaded.map((img,i)=>{
+      return {
+        url:img.url,
+        type:"image"
+      }
+    })
 
 
-      const res2=await axios.post('/api/post')
-      console.log(res2)
-    }catch(err){
-      throw new Error(err.message)
-    }
+      const res2=await axios.post('/api/post',{
+        kind:'CONTENT',
+        media,
+        text,
+
+
+        email:data?.user.email,
+
+
+
+      })
+      console.log(res)
+   
+  
+    
 
 
 
@@ -145,14 +160,16 @@ export default function ImagePreview({ images, setImages, imageInputRef }) {
 {
   uploading && <div>
 
-    Uploading {percent}
+  
   </div>
 }
       <div >
-        <button className='px-5 py-1 bg-white text-black mt-2 rounded-md ' onClick={handleUpload}>
+        {/* <button className='px-5 py-1 bg-white text-black mt-2 rounded-md ' onClick={handleUpload}>
 
         Post
-        </button>
+
+        </button> */}
+        {/* <span className='text-white'>{percent}</span>  */}
       </div>
     </div>
   );
