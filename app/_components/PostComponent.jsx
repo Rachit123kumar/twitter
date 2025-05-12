@@ -201,7 +201,7 @@ export default function PostComponent() {
         <div className='text-blue-500 flex-grow'>
           {postType == 'image' &&
             <>
-              <textarea ref={textRef} type="text" value={text} onChange={(e) => { setText(e.target.value) }} placeholder='What is happening?' className='text-white resize-none w-full border-none outline-none py-2 text-xl flex-grow' />
+              <textarea ref={textRef} type="text" value={text} onChange={(e) => { setText(e.target.value) }} placeholder={`What is happenning `} className='text-white resize-none w-full border-none outline-none py-2 text-xl flex-grow' />
 
 
               <ImagePreview imageInputRef={imageInputRef} images={images} setImages={setImages} />

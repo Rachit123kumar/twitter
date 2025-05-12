@@ -1,20 +1,36 @@
-import React from 'react'
-import { FaRegHeart } from "react-icons/fa";
+
+import React, { useState } from 'react'
+import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { MdOutlineModeComment } from "react-icons/md";
 import { BiRepost } from "react-icons/bi";
 import { CiBookmark } from "react-icons/ci";
 import { PiUploadSimple } from "react-icons/pi";
 import { LiaPollSolid } from "react-icons/lia";
 import { useUser } from './Providers';
+import axios from 'axios';
+import { useRouter } from 'next/navigation';
 export default function LikeCompo({tweetId, liked}) {
+    const [isliked,setLiked]=useState(liked)
+    const router=useRouter()
 
 const {user}=useUser()
 console.log(user)
 
     async function like(){
         if(liked){
+
+            // unlike 
             return
         }
+        console.log(tweetId, user.user.email)
+        setLiked(true)
+
+        const res=await axios.post('/api/like',{
+            email:user.user.email,
+            tweetId:tweetId
+
+        })
+        console.log(res.data)
 
 
     }
@@ -29,21 +45,26 @@ console.log(user)
             <div className='flex-grow flex items-center  gap-4 justify-between'>
 
 
-            <div className='hover:bg-red-500 transition duration-700 px-1 py-1 rounded-full'>
-                <span><FaRegHeart /></span>
+            <div className={`hover:bg-red-500 transition duration-700 px-1 py-1 rounded-full `} onClick={()=>like()}>
+{
+    isliked ? 
+<span className='cursor-pointer'><FaHeart className={`fill-red-500 '}`}/></span>:
+<span className='cursor-pointer'><FaRegHeart /></span>
+}
+
             </div>
-            <div>
+            <div className='cursor-pointer' onClick={()=>router.push(`/Home/${tweetId}`)}>
                 <span><MdOutlineModeComment /></span>
             </div>
-            <div>
+            <div className='cursor-pointer'>
                 <span><BiRepost /></span>
             </div>
-            <div>
+            <div className='cursor-pointer'>
                 <span><LiaPollSolid /></span>
             </div>
             <div className='flex gap-2 '>
-                <span><CiBookmark /></span>
-                <span><PiUploadSimple /></span>
+                <span className='cursor-pointer'><CiBookmark /></span>
+                <span className='cursor-pointer'><PiUploadSimple /></span>
             </div>
           
 

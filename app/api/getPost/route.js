@@ -5,7 +5,7 @@ import Tweet from "../../_models/tweet";
 export async function GET(){
 
 
- db.connectDb()
+await  db.connectDb()
 
 const allpost=await Tweet.find()
 .populate("author","name image")

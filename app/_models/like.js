@@ -15,12 +15,12 @@ const LikeSchema=new mongoose.Schema({
     tweet:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"Tweet",
-        default:"null"
+        default:null
     },
     comment:{
         type:mongoose.Schema.Types.ObjectId,
         ref:'Comment',
-        default:"null"
+        default:null
 
     }
 
@@ -31,6 +31,6 @@ LikeSchema.index({user:1,tweet:1},{unique:true,partialFilterExpression:{tweet:{$
 LikeSchema.index({user:1,comment:1},{unique:true,partialFilterExpression:{comment:{$type:'objectId'}}})
 
 
-const Like= mongoose.model.Like || mongoose.model("Like",LikeSchema)
+const Like= mongoose.models.Like || mongoose.model("Like",LikeSchema)
 
 export default Like;

@@ -1,6 +1,28 @@
 import React from 'react'
 
-export default function TweetPoll({ poll, author }) {
+export default function TweetPoll({ poll, author, tweetId, voted}) {
+
+
+
+    async function vote(){
+        // take tweet Id , user email 
+        // check if he is already voted not allow to vote only show the chart 
+
+        if(voted){
+            return 
+            // show the charts only
+        }else{
+            
+        }
+    }
+
+
+
+
+
+
+
+
     return (
         <div>
 

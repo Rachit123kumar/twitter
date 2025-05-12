@@ -8,7 +8,7 @@ import { signIn } from "next-auth/react";
 import db from "../../_features/utils/db"
 import User from "../../_models/user"
 export const authOptions={
-    adapter:MongoDBAdapter(client),
+    // adapter:MongoDBAdapter(client),
 
     providers: [
         CredentialsProvider({
@@ -48,7 +48,7 @@ export const authOptions={
             clientSecret:process.env.GOOGLE_CLIENT_SECRET
         }),
         FacebookProvider({
-            clientId:process.env.Facebook_id,
+            clientId:process.env.FACEBOOK_CLIENT_ID,
             clientSecret:process.env.FACEBOOK_CLIENT_SECRET
         }),
         GithubProvider({
@@ -66,31 +66,32 @@ export const authOptions={
 // // signIn:'/signin'
 //     },
     callbacks: {
-        // async signIn({user,account,profile}){
-        //     await db.connectDb();
-        //     try{
-        //         const existingUser=await User.findOne({email:user.email}) 
+        async signIn({user,account,profile}){
+            await db.connectDb();
+            try{
+                const existingUser=await User.findOne({email:user.email}) 
 
-        //         if(!existingUser){
+                if(!existingUser){
 
-        //             await User.create({
-        //                 displayName:user.name ||"no name",
-        //                 email:user.email,
-        //                 userName:user.email,
-        //                  profilePic: user.image || "",
-        //                  verified:true
+                    await User.create({
+                        displayName:user.name ||"no name",
+                        email:user.email,
+                        userName:user.email,
+                         profilePic: user.image || "",
+                         verified:true
                          
-        //             })
-        //         }
+                    })
+                }
 
-        //         return true
+                return true
 
 
-        //     }catch(err){
+            }catch(err){
+                return  false
 
-        //     }
+            }
 
-        // },
+        },
 
 
 

@@ -18,7 +18,7 @@ export default function ShowPost() {
         }
 
         iam()
-    },[])
+    },[]) 
 
 
 
@@ -32,7 +32,7 @@ export default function ShowPost() {
             
 
             {
-              tweets.length  &&  tweets.map((el,i)=>{
+              tweets.length >0 &&  tweets.map((el,i)=>{
                     return <div key={i} className='border-b-2 border-gray-300 mt-2 mb-2'>
                       {
                         el.kind=='CONTENT' && <div>
@@ -55,7 +55,7 @@ export default function ShowPost() {
                             </div>
                       }
                       {
-                        el.kind=='POLL' && <TweetPoll poll={el.poll} author={el.author}/>
+                        el.kind=='POLL' && <TweetPoll poll={el.poll} author={el.author} tweetId={el._id} voted={false}/>
                       }
 
                      
