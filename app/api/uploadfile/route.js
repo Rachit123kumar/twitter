@@ -1,6 +1,4 @@
-import { writeFile, mkdir, unlink } from "fs/promises";
 import { v2 as cloudinary } from "cloudinary";
-import path from "path";
 import { NextResponse } from "next/server";
 
 cloudinary.config({
@@ -26,18 +24,12 @@ export async function POST(req) {
     for (const file of files) {
       const buffer = Buffer.from(await file.arrayBuffer());
 
-      const tempDir = path.join(process.cwd(), "temp");
-      await mkdir(tempDir, { recursive: true });
-
-      const filePath = path.join(tempDir, file.name);
-      await writeFile(filePath, buffer);
-
-      const result = await cloudinary.uploader.upload(filePath, {
-        folder,
+      const result = await new Promise((resolve, reject) => {
+        cloudinary.uploader.upload_stream({ folder }, (error, result) => {
+          if (error) return reject(error);
+          resolve(result);
+        }).end(buffer);
       });
-
-      // Delete temp file after upload
-      await unlink(filePath);
 
       uploaded.push({
         url: result.secure_url,
