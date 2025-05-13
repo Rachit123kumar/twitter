@@ -50,6 +50,14 @@ async function getData(){
     return <div className="text-white">Post not found</div>;
   }
 
+
+
+  if(loading){
+    return <div className="h-[300px] w-full">
+      <span><AiOutlineLoading3Quarters className="size-5 animate-spin "/></span>
+    </div>
+  }
+
   return (
     <div className="text-white max-w-[1200px] mx-auto px-4 mt-3">
       
@@ -75,6 +83,24 @@ async function getData(){
         </div>
       )}
 
+      {
+        post.kind=='POLL' && <div>
+<p className="text-sm  pl-3">{post.poll.Question}</p>
+<div>
+
+{
+  post.poll.options.map((el,i)=>{
+    return <p  className="text-sm text-blue-800 cursor-pointer  bg-gray-300 mb-3 rounded-full px-3" key={i}>{el}</p>
+  })
+}
+
+  </div>
+
+
+
+        </div>
+      }
+
 
       { loading && <div className="flex items-center justify-center h-[100vh] w-full animate-spin">
 <AiOutlineLoading3Quarters className="size-10 text-white "/>
@@ -84,7 +110,7 @@ async function getData(){
 
       </div>}
 
-    <ReplyComponent/>
+    <ReplyComponent author={post.author}/>
 
       <div className="mb-2">
         

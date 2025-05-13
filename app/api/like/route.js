@@ -3,54 +3,45 @@ import db from "../../_features/utils/db.js";
 import { NextRequest, NextResponse } from "next/server";
 import User from "../../_models/user.js";
 
-
 export async function POST(req) {
+  try {
+    const body = await req.json();
+    const { tweetId, email } = body;
+    console.log("Tweet:", tweetId, "Email:", email);
 
-    try {
-        const body = await req.json();
-        const { tweetId, email } = body;
-        console.log(tweetId,email)
-        // 681ac72cb1a993a216783dbb hellobittukumar12@gmail.com
+    await db.connectDb();
 
-        await db.connectDb()
-
-        const user = await User.find({
-            email
-        })
-
-        const userId = user._id;
-        const isLiked = await Like.find({
-            user: userId,
-           tweet: tweetId
-
-        })
-        if (isLiked.length) {
-            return NextResponse.json({
-                message: "already liked.."
-            })
-        } else {
-            const newLIke = await Like.create({
-                user: userId,
-                tweet: tweetId
-            })
-
-            return NextResponse.json({
-                message:"Hey You liked the tweet.. "
-            })
-        }
-
-
-
-
-
-
-       
-    } catch (err) {
-        console.log(err)
-        return NextResponse.json({
-            message: "error ...",
-
-        })
+    const user = await User.findOne({ email });
+    if (!user) {
+      return NextResponse.json({ message: "User not found" }, { status: 404 });
     }
 
+    const userId = user._id;
+
+    const isLiked = await Like.findOne({
+      user: userId,
+      tweet: tweetId,
+    });
+
+    if (isLiked) {
+      return NextResponse.json({
+        message: "Already liked.",
+      });
+    }
+
+    await Like.create({
+      user: userId,
+      tweet: tweetId,
+    });
+
+    return NextResponse.json({
+      message: "You liked the tweet.",
+    });
+
+  } catch (err) {
+    console.error("LIKE error:", err);
+    return NextResponse.json({
+      message: "Something went wrong.",
+    }, { status: 500 });
+  }
 }

@@ -9,15 +9,18 @@ import { LiaPollSolid } from "react-icons/lia";
 import { useUser } from './Providers';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
-export default function LikeCompo({tweetId, liked}) {
-    const [isliked,setLiked]=useState(liked)
+export default function LikeCompo({tweetId, likeCount, commentCount,isLikedByMe}) {
+    const [isliked,setLiked]=useState(isLikedByMe)
+    const [numCount,setLikeCount]=useState(likeCount)
     const router=useRouter()
 
 const {user}=useUser()
 console.log(user)
 
     async function like(){
-        if(liked){
+        if(isliked){
+
+            // delete the like 
 
             // unlike 
             return
@@ -31,6 +34,7 @@ console.log(user)
 
         })
         console.log(res.data)
+        setLikeCount((num)=>num+1)
 
 
     }
@@ -45,16 +49,17 @@ console.log(user)
             <div className='flex-grow flex items-center  gap-4 justify-between'>
 
 
-            <div className={`hover:bg-red-500 transition duration-700 px-1 py-1 rounded-full `} onClick={()=>like()}>
+            <div className={`hover:bg-red-500 transition duration-700 px-1 py-1 rounded-full flex items-center  gap-2`} onClick={()=>like()}>
 {
     isliked ? 
 <span className='cursor-pointer'><FaHeart className={`fill-red-500 '}`}/></span>:
 <span className='cursor-pointer'><FaRegHeart /></span>
 }
+<span className='text-white text-xs'>{numCount || ""}</span>
 
             </div>
             <div className='cursor-pointer' onClick={()=>router.push(`/Home/${tweetId}`)}>
-                <span><MdOutlineModeComment /></span>
+                <span className='text-white'><MdOutlineModeComment /> {commentCount || ""}</span>
             </div>
             <div className='cursor-pointer'>
                 <span><BiRepost /></span>

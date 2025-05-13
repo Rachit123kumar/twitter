@@ -12,7 +12,7 @@ import ImageSliderReply from './ImageSliderReply';
 
 
 
-export default function ReplyComponent() {
+export default function ReplyComponent({author}) {
     const [user,setUser]=useState(null)
     const fileRef=useRef()
     const [images,setImages]=useState([]);
@@ -88,7 +88,7 @@ export default function ReplyComponent() {
         
         
         <div className='mt-3'>
-            <p className='text-gray-300 text-xs font-extralight pl-3'>Replying to <span className='text-blue-300 underline cursor-pointer'>@officialBittuKumar</span> in WebDeveloper community </p>
+            <p className='text-gray-300 text-xs font-extralight pl-3'>Replying to <span className='text-blue-300 underline cursor-pointer'>@{author?.email}</span> in WebDeveloper community </p>
             <div className=' rounded-full flex items-center mt-1'>
                 <img src={user?.user?.image} alt="profile image " height={30} width={30} className='rounded-full object-contain '/>
                 <input type="text" placeholder='Post your reply ' className='text-white text-sm flex-grow px-3 py-2 border-none outline-none' />

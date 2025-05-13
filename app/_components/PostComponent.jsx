@@ -197,7 +197,7 @@ export default function PostComponent() {
     <div className='flex flex-col text-white mt-2'>
       <div className='flex gap-x-3'>
 
-        <img src={"/my.png"} className='h-10 w-10 rounded-full' />
+        <img src={` ${user?.user?.image  || "/my.png"}`} className='h-10 w-10 rounded-full' />
         <div className='text-blue-500 flex-grow'>
           {postType == 'image' &&
             <>
