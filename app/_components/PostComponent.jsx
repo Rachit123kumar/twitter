@@ -23,7 +23,7 @@ export default function PostComponent() {
   const router = useRouter()
 
   const [text, setText] = useState('')
-  const [mediasUploaded,setMediaUploaded]=useState([])
+  const [mediasUploaded, setMediaUploaded] = useState([])
   const [cursorPosition, setCursorPositon] = useState('')
   const [images, setImages] = useState([])
   const imageInputRef = useRef()
@@ -44,15 +44,15 @@ export default function PostComponent() {
   ])
 
   const { data, status } = useSession();
-  const {user,setUser}=useUser()
+  const { user, setUser } = useUser()
 
 
   useEffect(() => {
     if (status == 'unauthenticated') {
       router.push('/auth/signin')
-    }if(status==="authenticated"){
+    } if (status === "authenticated") {
       setUser(data)
-      
+
     }
 
   }, [status])
@@ -83,8 +83,8 @@ export default function PostComponent() {
         }
       })
       console.log(opt)
-      if(!(opt.length>=2)){
-        alert (" please give us options");
+      if (!(opt.length >= 2)) {
+        alert(" please give us options");
         setLoading(false)
         return
       }
@@ -94,7 +94,7 @@ export default function PostComponent() {
         question: Question,
         option: opt,
         type: "poll",
-        expiresIn:{
+        expiresIn: {
           days,
           min,
           hour
@@ -109,24 +109,29 @@ export default function PostComponent() {
 
 
 
+setOptions([
+    '', ''
+
+  ])
+  setQuestion('')
 
 
 
-    }else if(postType==='image'){
+    } else if (postType === 'image') {
       // take images link , text and 
       if (images.length > 0) {
         const postImages = images.map((img) => dataURItoBlob(img.src));
-      
+
         const formData = new FormData();
         formData.append("path", "bittukumar12/posts");
-      
+
         postImages.forEach((blob) => {
           formData.append("files", blob); // backend expects "files"
         });
-      
+
         try {
           setLoading(true);
-      
+
           const res = await axios.post("/api/uploadfile", formData, {
             headers: {
               "Content-Type": "multipart/form-data",
@@ -136,47 +141,53 @@ export default function PostComponent() {
             //   setPercent(percentCompleted);
             // },
           });
-      
+
           // Prepare media array for MongoDB
           const media = res.data.uploaded.map((img, i) => ({
             url: img.url,
             type: images[i]?.type || "image", // fallback to image
           }));
-      
+
           console.log("Media array to send to backend:", media);
-          const res2=await axios.post('/api/post',{
-            email:data?.user.email,
+          const res2 = await axios.post('/api/post', {
+            email: data?.user.email,
             text,
             media,
-            type:'CONTENT'
+            type: 'CONTENT'
 
           })
           console.log(res2)
-      
+
           // Now you can POST this media array with your tweet
           // await axios.post("/api/tweet", { content, media, ... });
-      
+
           setLoading(false);
+
+
+
         } catch (err) {
           console.error("Upload failed:", err.message);
           setLoading(false);
         }
-      }else{
+      
+      } else {
         setLoading(true)
-        const res2=await axios.post('/api/post',{
-          email:data?.user.email,
+        const res2 = await axios.post('/api/post', {
+          email: data?.user.email,
           text,
-        
-          type:'CONTENT'
+
+          type: 'CONTENT'
 
         })
         console.log(res2)
         setLoading(true)
       }
-      
-          
+
+
     }
-    
+   setImages([])
+   setText('')
+   setPostType('image')
 
     setLoading(false)
   }
@@ -197,7 +208,7 @@ export default function PostComponent() {
     <div className='flex flex-col text-white mt-2'>
       <div className='flex gap-x-3'>
 
-        <img src={` ${user?.user?.image  || "/my.png"}`} className='h-10 w-10 rounded-full' />
+        <img src={` ${user?.user?.image || "/my.png"}`} className='h-10 w-10 rounded-full' />
         <div className='text-blue-500 flex-grow'>
           {postType == 'image' &&
             <>
@@ -209,7 +220,7 @@ export default function PostComponent() {
           }
 
           {
-            postType == 'poll' && <Poll setPostType={setPostType} Question={Question} setQuestion={setQuestion} option={option} setOptions={setOptions} min={min} setMins={setMins} hour={hour} setHour={setHour} days={days} setDays={setDays}/>
+            postType == 'poll' && <Poll setPostType={setPostType} Question={Question} setQuestion={setQuestion} option={option} setOptions={setOptions} min={min} setMins={setMins} hour={hour} setHour={setHour} days={days} setDays={setDays} />
           }
 
 
