@@ -74,7 +74,10 @@ const options = [{
 
 
     return (
-        <div className={`flex h-[98vh] bg-black flex-col  gap-y-7 mt-2 px-3 border-r-1 border-white `}>
+        
+
+        
+        <div className={`flex sticky top-0 left-0 h-[98vh] bg-black flex-col  gap-y-7 mt-2 px-3 border-r-1 border-white `}>
 
             <div className={` block md:hidden  `} onClick={()=>setOpenNav(prev=>!prev)}>
                 <img className="h-10 w-10 rounded-full" src="/my.png" alt="Profile Image" />
@@ -94,7 +97,7 @@ const options = [{
                 
             {
                 options.map((el, i) => {
-                    return <div className={`hidden sm:flex items-center gap-3  cursor-pointer  text-white  text-2xl`} key={i} onClick={() =>router.push(el.link)}>
+                    return <div className={`hidden sm:flex items-center gap-3  cursor-pointer  text-white  `} key={i} onClick={() =>router.push(el.link)}>
                         <span>{el.icons}</span>
                         {<p className='hidden lg:block'>{el.name}</p>}
 
@@ -135,6 +138,11 @@ const options = [{
 
 
         </div>
+
+
+        
+
+        
 
     )
 }

@@ -1,12 +1,15 @@
 "use client";
 import { useEffect, useState } from "react";
-import ImageSlider from "../../_components/ImageSlider";
+import ImageSlider from "../../../_components/ImageSlider";
 
 import { useParams } from "next/navigation";
 import axios from "axios";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
-import ReplyComponent from "../../_components/ReplyComponent";
+import ReplyComponent from "../../../_components/ReplyComponent";
+import { useSession } from "next-auth/react";
+import LikeCompo from "../../../_components/LikeCompo";
+import ShowAllcomments from "../../../_components/ShowAllcomments"
 
 
 export default  function PostID() {
@@ -14,6 +17,7 @@ export default  function PostID() {
 
     const [post,setPost]=useState(null)
     const [loading,setLoading]=useState(false)
+    const {status,data}=useSession()
 
 
 
@@ -25,9 +29,14 @@ export default  function PostID() {
 
 
 async function getData(){
-    try{setLoading(true)
+    try{
+      
+     
+      
+      setLoading(true)
     const res=await axios.post('/api/onedetailpost',{
-        postId
+        postId,
+        email:data.user.email
     })
     setPost(res.data)
     console.log(res.data)
@@ -41,9 +50,12 @@ async function getData(){
 
 
     useEffect(()=>{
+      if(status=="unauthenticated" || status=="loading"){
+        return
+      }
         getData()
 
-    },[])
+    },[data,status])
   
 
   if (!post && !loading) {
@@ -64,7 +76,7 @@ async function getData(){
      {post && 
          <div className="flex items-center  gap-2">
             <img src={post?.author?.image} alt={"profile image "} height={20} width={20} className="rounded-full"/> 
-            <p className="text-blue-400 ">{post.author.name }</p>
+            <p className="text-blue-400 ">{post.author.name } </p>
         
 
       </div>
@@ -108,9 +120,15 @@ async function getData(){
 
 
 
-      </div>}
+      </div>
+      
+      
+      }
+      <LikeCompo tweetId={post._id} likeCount={post.likeCount} commentCount ={post.commentCount} isLikedByMe={post.isLikedByMe} user={data.user}/>
 
-    <ReplyComponent author={post.author}/>
+    <ReplyComponent author={post.author} tweetId={post?._id}/>
+
+    <ShowAllcomments comments={post.comments}/>
 
       <div className="mb-2">
         

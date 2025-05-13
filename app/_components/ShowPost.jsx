@@ -69,7 +69,7 @@ export default function ShowPost() {
                   <div>
                     <div className='flex items-center gap-2 '>
                       <div className='h-8 w-8 rounded-full bg-white overflow-hidden'>
-                        <img src={el.author.image} alt='profile image' className='object-contain' />
+                        <img src={el.author.image || el.author.profilePic} alt='profile image' className='object-contain' />
                       </div>
                       <p className='text-white font-sans text-sm'>{el.author.name}</p>
 
@@ -89,7 +89,7 @@ export default function ShowPost() {
               }
 
 
-              <LikeCompo tweetId={el._id} likeCount={el.likeCount} commentCount={el.commentCount} isLikedByMe={el.isLikedByMe} />
+              <LikeCompo tweetId={el._id} likeCount={el.likeCount} commentCount={el.commentCount} isLikedByMe={el.isLikedByMe} user={data.user} />
 
 
 

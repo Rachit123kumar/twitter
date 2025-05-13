@@ -9,27 +9,28 @@ import { LiaPollSolid } from "react-icons/lia";
 import { useUser } from './Providers';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
-export default function LikeCompo({tweetId, likeCount, commentCount,isLikedByMe}) {
+export default function LikeCompo({tweetId, likeCount, commentCount,isLikedByMe,user=null}) {
     const [isliked,setLiked]=useState(isLikedByMe)
     const [numCount,setLikeCount]=useState(likeCount)
     const router=useRouter()
 
-const {user}=useUser()
-console.log(user)
+
+
 
     async function like(){
-        if(isliked){
+        console.log(user)
+        if(isliked || !user){
 
             // delete the like 
 
             // unlike 
             return
         }
-        console.log(tweetId, user.user.email)
+        console.log(tweetId, user.email)
         setLiked(true)
 
         const res=await axios.post('/api/like',{
-            email:user.user.email,
+            email:user.email,
             tweetId:tweetId
 
         })
@@ -58,8 +59,8 @@ console.log(user)
 <span className='text-white text-xs'>{numCount || ""}</span>
 
             </div>
-            <div className='cursor-pointer' onClick={()=>router.push(`/Home/${tweetId}`)}>
-                <span className='text-white'><MdOutlineModeComment /> {commentCount || ""}</span>
+            <div className='cursor-pointer' onClick={()=>router.push(`/Home/post/${tweetId}`)}>
+                <span className='text-white flex items-center text-sm gap-2'><MdOutlineModeComment /> {commentCount || ""}</span>
             </div>
             <div className='cursor-pointer'>
                 <span><BiRepost /></span>
