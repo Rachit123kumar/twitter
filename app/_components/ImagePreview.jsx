@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import dataURItoBlob from '../_features/dataURItoBlob';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
-
+import imageCompression from "browser-image-compression"
 export default function ImagePreview({ images, setImages, text,imageInputRef }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [uploading,setUploading]=useState(false);
@@ -31,19 +31,43 @@ export default function ImagePreview({ images, setImages, text,imageInputRef }) 
 
 
 
-  function handleChange(e) {
-    const files = Array.from(e.target.files);
+ async function handleChange(e) {
+  const files = Array.from(e.target.files);
 
-    files.forEach((img) => {
+  const options = {
+    maxSizeMB: 1,
+    maxWidthOrHeight: 1920,
+    useWebWorker: true
+  };
 
-      const reader = new FileReader();
-      reader.readAsDataURL(img);
-      reader.onload = (readerEvent) => {
-        const fileType=img.type.startsWith("video")?"video":"image"
-        setImages((prev) => [...prev, {type:fileType,src:readerEvent.target.result}]);
-      };
-    });
+  for (const file of files) {
+    const fileType = file.type.startsWith("video") ? "video" : "image";
+
+    let finalFile = file;
+
+    // 🧠 Compress only if it's an image
+    if (fileType === "image") {
+      try {
+        console.log("original size",finalFile.size/1024)
+
+        finalFile = await imageCompression(file, options);
+        console.log("compressed size",finalFile.size/1024)
+      } catch (error) {
+        console.error("Compression failed:", error);
+      }
+    }
+
+    const reader = new FileReader();
+    reader.readAsDataURL(finalFile);
+    reader.onload = (readerEvent) => {
+      setImages((prev) => [...prev, {
+        type: fileType,
+        src: readerEvent.target.result
+      }]);
+    };
   }
+}
+
 
  async function handleUpload(){
     console.log(images)
@@ -128,7 +152,7 @@ export default function ImagePreview({ images, setImages, text,imageInputRef }) 
             {images.map((imag, i) => (
               <div
                 key={i}
-                className="h-[300px] w-full   flex-shrink-0 bg-cover overflow-hidden   bg-center bg-gray-300">
+                className="h-[300px] w-full flex items-center justify-center  flex-shrink-0 bg-cover overflow-hidden   bg-center bg-gray-800">
                 {  imag.type=="image"? <img src={imag.src} className='h-full w-auto    rounded-md'/>
                 :
                 <video
