@@ -43,11 +43,11 @@ export default function ImageSlider({images}) {
     <div className=' overflow-hidden flex w-full  relative'>
         {
             images.map((el,i)=>{
-                return <div key={i}  className='flex justify-center  transition-transform duration-500 max-w-[700px] h-auto flex-shrink-0 bg-cover overflow-hidden bg-center items-center' style={{transform:`translateX(-${currentIndex*100}%)`, aspectRatio:'4/3'}}> 
+                return <div key={i}  className='flex justify-center  transition-transform duration-500 w-full h-auto flex-shrink-0 bg-cover overflow-hidden bg-center items-center' style={{transform:`translateX(-${currentIndex*100}%)`, aspectRatio:'4/3'}}> 
 
 
    
-    <img src={el.url} alt='tweet image ' className=' items-center h-auto  w-auto  rounded-sm object-center object-contain '/>
+    <img src={el.url} alt='tweet image ' className=' items-center h-auto  w-auto rounded-sm '/>
 
 
                 </div>
