@@ -1,9 +1,28 @@
 "use client"
-import { getProviders, signIn } from 'next-auth/react';
+import { getProviders, signIn, useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import React, { useEffect } from 'react'
+import { AiOutlineLoading } from 'react-icons/ai';
 import { FaGithub, FaTwitter } from 'react-icons/fa'
 import { FcGoogle } from "react-icons/fc";
 export default function Page() {
+
+
+const {data,status}=useSession();
+const router=useRouter();
+
+
+
+useEffect(()=>{
+
+  if(status==="authenticated"){
+    router.push('/Home')
+
+  }
+},[status])
+
+
+
 
 
 
@@ -19,6 +38,12 @@ export default function Page() {
   },[])
 
 
+  if(status=="loading"){
+    return <div className='h-[100vh] flex items-center justify-center'>
+      <AiOutlineLoading className='text-white animate-spin h-20'/>
+
+    </div>
+  }
 
   return (
     <div className='text-white flex h-[100vh] max-w-[1200px] mx-auto items-center justify-center px-4 md:px-8 lg:px-20'>

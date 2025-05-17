@@ -4,6 +4,7 @@ import dataURItoBlob from '../_features/dataURItoBlob';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import imageCompression from "browser-image-compression"
+import ImageSlider from './ImageSlider';
 export default function ImagePreview({ images, setImages, text,imageInputRef }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [uploading,setUploading]=useState(false);
@@ -138,45 +139,47 @@ export default function ImagePreview({ images, setImages, text,imageInputRef }) 
 
   return (
     <div className="px-3 rounded-md mb-3 py-2 max-w-[600px] w-full">
-      <input type="file" multiple hidden ref={imageInputRef} onChange={handleChange} accept='image/*,video/*' />
+      <input type="file" multiple hidden ref={imageInputRef} onChange={handleChange} accept='image/*' />
 
       {images && images.length > 0 && (
-        <div className="relative overflow-hidden w-full bg-white">
-          <div
-            className="flex transition-transform duration-500"
-            style={{
-              transform: `translateX(-${currentIndex * 100}%)`,
-              width: `${images.length * 100}%`
-            }}
-          >
-            {images.map((imag, i) => (
-              <div
-                key={i}
-                className="h-[300px] w-full flex items-center justify-center  flex-shrink-0 bg-cover overflow-hidden   bg-center bg-gray-800">
-                {  imag.type=="image"? <img src={imag.src} className='h-full w-auto    rounded-md'/>
-                :
-                <video
-                src={imag.src}
-                controls
-                className="h-full w-auto rounded-md"
-              />
-                }
+        // <div className="relative overflow-hidden w-full bg-white">
+        //   <div
+        //     className=" flex transition-transform duration-500"
+        //     style={{
+        //       transform: `translateX(-${currentIndex * 100}%)`,
+        //       width: `${images.length * 100}%`
+        //     }}
+        //   >
+        //     {images.map((imag, i) => (
+        //       <div
+        //         key={i}
+        //         className="h-[300px] w-full flex-shrink-0 bg-cover overflow-hidden   bg-center bg-gray-800">
+        //         {  imag.type=="image"? <img src={imag.src} className='h-full w-auto    rounded-md'/>
+        //         :
+        //         <video
+        //         src={imag.src}
+        //         controls
+        //         className="h-full w-auto rounded-md"
+        //       />
+        //         }
 
-                    </div>
+        //             </div>
 
 
               
-            ))}
+        //     ))}
 
             
-          </div>
+        //   </div>
 
-          {/* Navigation Buttons */}
-          <div className="flex justify-between mt-2">
-            <button onClick={previousSlide} className="bg-gray-300 px-3 py-1 rounded">Previous</button>
-            <button onClick={nextSlide} className="bg-gray-300 px-3 py-1 rounded">Next</button>
-          </div>
-        </div>
+        //   {/* Navigation Buttons */}
+        //   <div className="flex justify-between mt-2">
+        //     <button onClick={previousSlide} className="bg-gray-300 px-3 py-1 rounded">Previous</button>
+        //     <button onClick={nextSlide} className="bg-gray-300 px-3 py-1 rounded">Next</button>
+        //   </div>
+        // </div>
+
+        <ImageSlider images={images}/>
       )}
 
 
