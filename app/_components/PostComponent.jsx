@@ -250,12 +250,12 @@ setOptions([
           <button><span><FaBrain className='fill-blue-500 cursor-pointer' /></span></button>
 
 
-          <div className='relative'>
+          <div className='relative hidden md:block'>
 
             <button onClick={() => setPicker(picker => !picker)}><span><MdEmojiEmotions className='fill-blue-500 cursor-pointer' /></span></button>
 
 
-            {picker && <div className='absolute top-10 left-0' onMouseLeave={() => { setPicker(false) }}>
+            {picker && <div className='absolute top-10 left-0 z-10 hidden md:block' onMouseLeave={() => { setPicker(false) }}>
 
 
               <ImojiPickerBackground textRef={textRef} text={text} setCursorPositon={setCursorPositon} setText={setText} cursorPosition={cursorPosition} />
@@ -263,15 +263,15 @@ setOptions([
 
             }
           </div>
-          <button>
+          {/* <button>
             <img src={'/icons/colorful.png'} className='h-12 w-12 object-cover' />
-          </button>
+          </button> */}
 
         </div>
 
         <div>
 
-          <button className='px-4 py-2 bg-white text-black rounded-full' onClick={submitPost} disabled={loading}>{loading ? <AiOutlineLoading3Quarters className='size-5 text-black animate-spin ' /> : "Post"}</button>
+          <button className='px-4 py-1 m-1 bg-white text-black rounded-full' onClick={submitPost} disabled={loading}>{loading ? <AiOutlineLoading3Quarters className='size-5 text-black animate-spin ' /> : "Post"}</button>
 
 
         </div>

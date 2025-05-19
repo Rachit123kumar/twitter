@@ -7,13 +7,13 @@ import GithubProvider from "next-auth/providers/github"
 import { signIn } from "next-auth/react";
 import db from "../../_features/utils/db"
 import User from "../../_models/user"
-export const authOptions={
+export const authOptions = {
     // adapter:MongoDBAdapter(client),
 
     providers: [
         CredentialsProvider({
             name: "Credentials",
-    
+
             credentials: {
                 email: { label: "username", placeholder: "js mith" },
                 password: { label: "Password", placeholder: "Enter passwoord" },
@@ -44,16 +44,16 @@ export const authOptions={
             }
         }),
         GoogleProvider({
-            clientId:process.env.GOOGLE_CLIENT_ID,
-            clientSecret:process.env.GOOGLE_CLIENT_SECRET
+            clientId: process.env.GOOGLE_CLIENT_ID,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET
         }),
         FacebookProvider({
-            clientId:process.env.FACEBOOK_CLIENT_ID,
-            clientSecret:process.env.FACEBOOK_CLIENT_SECRET
+            clientId: process.env.FACEBOOK_CLIENT_ID,
+            clientSecret: process.env.FACEBOOK_CLIENT_SECRET
         }),
         GithubProvider({
-            clientId:process.env.GITHUB_CLIENT_ID,
-            clientSecret:process.env.GITHUB_CLIENT_SECRET
+            clientId: process.env.GITHUB_CLIENT_ID,
+            clientSecret: process.env.GITHUB_CLIENT_SECRET
         })
     ],
 
@@ -62,32 +62,69 @@ export const authOptions={
         strategy: "jwt"
     },
 
-//     pages:{
-// // signIn:'/signin'
-//     },
+    //     pages:{
+    // // signIn:'/signin'
+    //     },
     callbacks: {
-        async signIn({user,account,profile}){
+        async signIn({ user, account, profile }) {
             await db.connectDb();
-            try{
-                const existingUser=await User.findOne({email:user.email}) 
+            try {
+                const existingUser = await User.findOne({ email: user.email })
 
-                if(!existingUser){
+
+                // way to create a userName
+                async function createUserName(email) {
+                    const myEmail = email
+
+                    const randomNumber = Math.random().toFixed(5)
+                    const ema = email.split("@");
+                    const userName = randomNumber + ema[0]
+                    // return userName
+
+                    const anyUserWithThisUserName = await User.findOne({
+                        userName: userName
+                    })
+
+                    if (anyUserWithThisUserName) {
+                        createUserName(myEmail)
+                    } else {
+                        return userName
+                    }
+
+
+
+
+
+
+
+                }
+
+
+
+
+
+
+
+                if (!existingUser) {
+
+
+                    const userName = createUserName(user.email)
 
                     await User.create({
-                        displayName:user.name ||"no name",
-                        email:user.email,
-                        userName:user.email,
-                         profilePic: user.image || "",
-                         verified:true
-                         
+                        displayName: user.name || "no name",
+                        email: user.email,
+                        userName: userName,
+                        profilePic: user.image || "",
+                        verified: true
+
                     })
                 }
 
                 return true
 
 
-            }catch(err){
-                return  false
+            } catch (err) {
+                return false
 
             }
 
@@ -101,6 +138,7 @@ export const authOptions={
                 token.fullName = user.fullName;
                 token.email = user.email;
                 token.profileImage = user.profileImage
+                token.userName = user.userName
             }
             return token;
         },
@@ -110,6 +148,7 @@ export const authOptions={
                 session.user.fullName = token.fullName;
                 session.user.email = token.email;
                 session.user.profileImage = token.profileImage
+                session.user.userName = token.userName
             }
             return session;
         }

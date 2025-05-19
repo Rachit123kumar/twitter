@@ -9,7 +9,7 @@ export default function ImojiPickerBackground({text,textRef,setCursorPositon,set
         // start postiion 
         const ref = textRef.current
         ref.focus()
-    
+       console.log(text)
         const start = text.substring(0, ref.selectionStart)
         const end = text.substring(ref.selectionStart)
         const { emoji } = emojiData

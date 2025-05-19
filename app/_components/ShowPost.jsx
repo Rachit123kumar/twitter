@@ -71,7 +71,7 @@ export default function ShowPost() {
                       <div className='h-8 w-8 rounded-full bg-white overflow-hidden'>
                         <img src={el.author.image || el.author.profilePic} alt='profile image' className='object-contain' />
                       </div>
-                      <p className='text-white font-sans text-sm'>{el.author.name}</p>
+                      <p className='text-white font-sans text-sm'>{el.author.name || el.author.displayName}</p>
 
                     </div>
                     <p className='text-white pl-2 text-sm font-sans'>{el.content}</p>
