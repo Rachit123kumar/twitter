@@ -37,6 +37,9 @@ const {data,status}=useSession()
                 
                  optionIndex:num
             })
+
+
+            setPollResult(res.data.updatedResult)
          
         }
     }
@@ -78,10 +81,18 @@ const {data,status}=useSession()
 
                 {
                     hasVoted &&  poll.options.map((el, i) => {
-                        return <p key={i} onClick={()=>vote(i+1)} className='text-white '>
-                            {el}-{result[i]?.percentage}
+                        return <div key={i} onClick={()=>vote(i+1)} className='  text-white  h-[20px] max-w-[90%]' >
+                            <div style={{width:`${(result[i]?.percentage /100) * 200}px`}}  className={`absolute w-[]  h-[20px] w-[200px]  bg-white`}>
 
-                        </p>
+                                </div>
+                            <span className='relative top-0 flex justify-between left-0 text-red-500 text-sm z-10'>
+
+                                <span> {el}     </span>
+                                <span>{result[i]?.percentage}%</span>
+                               
+                                </span>
+
+                        </div>
                     })
                 }
 

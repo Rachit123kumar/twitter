@@ -1,158 +1,131 @@
-import CredentialsProvider from "next-auth/providers/credentials"
-import GoogleProvider from "next-auth/providers/google"
-import FacebookProvider from "next-auth/providers/facebook"
-import { MongoDBAdapter } from "@auth/mongodb-adapter";
-import client from "../utils/newDb"
-import GithubProvider from "next-auth/providers/github"
-import { signIn } from "next-auth/react";
-import db from "../../_features/utils/db"
-import User from "../../_models/user"
+import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
+import FacebookProvider from "next-auth/providers/facebook";
+import GithubProvider from "next-auth/providers/github";
+import axios from "axios";
+import db from "../../_features/utils/db";
+import User from "../../_models/user";
+
 export const authOptions = {
-    // adapter:MongoDBAdapter(client),
+  providers: [
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        email: { label: "Email", placeholder: "john@example.com" },
+        password: { label: "Password", placeholder: "Enter password" },
+      },
+      async authorize(credentials) {
+        try {
+          const res = await axios.post(`https://watsappbackend.learngames.shop/user/login`, {
+            email: credentials.email,
+            password: credentials.password,
+          });
 
-    providers: [
-        CredentialsProvider({
-            name: "Credentials",
+          const data = res.data;
+          if (res.status === 200 && data) {
+            return {
+              id: data._id,
+              email: data.email,
+              name: data.fullName || "No Name",
+              image: data.profilePic || "",
+              userName: data.userName,
+              verified: data.verified,
+            };
+          }
 
-            credentials: {
-                email: { label: "username", placeholder: "js mith" },
-                password: { label: "Password", placeholder: "Enter passwoord" },
+          return null;
+        } catch (err) {
+          console.error("Authorize error:", err);
+          return null;
+        }
+      },
+    }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    }),
+    FacebookProvider({
+      clientId: process.env.FACEBOOK_CLIENT_ID,
+      clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
+    }),
+    GithubProvider({
+      clientId: process.env.GITHUB_CLIENT_ID,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET,
+    }),
+  ],
 
+  secret: process.env.AUTH_SECRET,
 
-            },
-            async authorize(credentials, req) {
-                console.log(credentials)
-                try {
-                    // const res = await axios.post(`${PORT}/user/login`, {
-                    const res = await axios.post(`https://watsappbackend.learngames.shop/user/login`, {
-                        email: credentials.email,
-                        password: credentials.password
-                    })
+  session: {
+    strategy: "jwt",
+  },
 
-                    console.log(res.data, "res")
-                    if (res.status == 200) {
-                        return res.data
-                    }
+  callbacks: {
+    async signIn({ user, account }) {
+      await db.connectDb();
+      try {
+        let existingUser = await User.findOne({ email: user.email });
 
+        // Prevent login if user is unverified
+        if (existingUser && !existingUser.verified) {
+          console.log("User is not verified");
+          return false;
+        }
 
-                } catch (err) {
-                    console.error(err)
-                    return false
-                }
+        // Generate unique username
+        async function createUserName(email) {
+          const randomNumber = Math.random().toFixed(5).split(".")[1];
+          const base = email.split("@")[0];
+          const userName = `${base}${randomNumber}`;
 
+          const userExists = await User.findOne({ userName });
+          return userExists ? await createUserName(email) : userName;
+        }
 
-            }
-        }),
-        GoogleProvider({
-            clientId: process.env.GOOGLE_CLIENT_ID,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET
-        }),
-        FacebookProvider({
-            clientId: process.env.FACEBOOK_CLIENT_ID,
-            clientSecret: process.env.FACEBOOK_CLIENT_SECRET
-        }),
-        GithubProvider({
-            clientId: process.env.GITHUB_CLIENT_ID,
-            clientSecret: process.env.GITHUB_CLIENT_SECRET
-        })
-    ],
+        if (!existingUser) {
+          const userName = await createUserName(user.email);
+          const newUser = await User.create({
+            displayName: user.name || "No Name",
+            email: user.email,
+            userName,
+            profilePic: user.image || "",
+            verified: true,
+          });
+          user.id = newUser._id;
+        } else {
+          user.id = existingUser._id;
+          user.userName = existingUser.userName;
+          user.profilePic = existingUser.profilePic;
+          user.verified = existingUser.verified;
+        }
 
-    secret: process.env.AUTH_SECRET,
-    session: {
-        strategy: "jwt"
+        return true;
+      } catch (err) {
+        console.error("signIn error:", err);
+        return false;
+      }
     },
 
-    //     pages:{
-    // // signIn:'/signin'
-    //     },
-    callbacks: {
-        async signIn({ user, account, profile }) {
-            await db.connectDb();
-            try {
-                const existingUser = await User.findOne({ email: user.email })
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.fullName = user.name || user.fullName || "No Name";
+        token.email = user.email;
+        token.profileImage = user.image || user.profilePic || "";
+        token.userName = user.userName || "";
+      }
+      return token;
+    },
 
-
-                // way to create a userName
-                async function createUserName(email) {
-                    const myEmail = email
-
-                    const randomNumber = Math.random().toFixed(5)
-                    const ema = email.split("@");
-                    const userName = randomNumber + ema[0]
-                    // return userName
-
-                    const anyUserWithThisUserName = await User.findOne({
-                        userName: userName
-                    })
-
-                    if (anyUserWithThisUserName) {
-                        createUserName(myEmail)
-                    } else {
-                        return userName
-                    }
-
-
-
-
-
-
-
-                }
-
-
-
-
-
-
-
-                if (!existingUser) {
-
-
-                    const userName = createUserName(user.email)
-
-                    await User.create({
-                        displayName: user.name || "no name",
-                        email: user.email,
-                        userName: userName,
-                        profilePic: user.image || "",
-                        verified: true
-
-                    })
-                }
-
-                return true
-
-
-            } catch (err) {
-                return false
-
-            }
-
-        },
-
-
-
-        async jwt({ token, user }) {
-            if (user) {
-                token.id = user.userId;
-                token.fullName = user.fullName;
-                token.email = user.email;
-                token.profileImage = user.profileImage
-                token.userName = user.userName
-            }
-            return token;
-        },
-        async session({ session, token }) {
-            if (token) {
-                session.user.id = token.id;
-                session.user.fullName = token.fullName;
-                session.user.email = token.email;
-                session.user.profileImage = token.profileImage
-                session.user.userName = token.userName
-            }
-            return session;
-        }
-    }
-
-
-}
+    async session({ session, token }) {
+      if (token && session.user) {
+        session.user.id = token.id;
+        session.user.fullName = token.fullName;
+        session.user.email = token.email;
+        session.user.profileImage = token.profileImage;
+        session.user.userName = token.userName;
+      }
+      return session;
+    },
+  },
+};
