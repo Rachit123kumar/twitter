@@ -69,12 +69,12 @@ export default function ShowPost() {
                   <div>
                     <div className='flex items-center gap-2 '>
                       <div className='h-8 w-8 rounded-full bg-white overflow-hidden'>
-                        <img src={el.author.image || el.author.profilePic} alt='profile image' className='object-contain' />
+                        <img src={ el.author.profilePic} alt='profile image' className='object-contain' />
                       </div>
                       <div className='flex gap-1 items-center'>
 
                             <span className='text-xs font-sans text-gray-400'>@{el.author.userName}</span>
-                      <p className=' font-sans text-sm text-blue-400 hover:underline cursor-pointer'>{el.author.name || el.author.displayName}
+                      <p className=' font-sans text-sm text-blue-400 hover:underline cursor-pointer '>{el.author?.displayName}
                       </p>
                       </div>
                   
