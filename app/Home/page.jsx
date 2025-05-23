@@ -10,16 +10,17 @@ import { GiPirateCaptain } from "react-icons/gi";
 import { AiFillCreditCard, AiFillThunderbolt } from "react-icons/ai";
 import { FaUserAlt } from "react-icons/fa";
 import { useRouter } from 'next/navigation';
+import CreatePostButton from "../_components/createPostButton"
 
 const options = [
-  { name: "Home", icons: <IoMdHome />, link: "/Home" },
-  { name: "Explore", icons: <FaSearch />, link: "/Home/Explore" },
-  { name: "Notifications", icons: <IoNotifications />, link: "/Home/notification" },
-  { name: "Grok", icons: <GiPirateCaptain />, link: "/Home/Grok" },
-  { name: "Communities", icons: <MdPeopleAlt />, link: "/Home/Communities" },
-  { name: "Premium", icons: <AiFillCreditCard />, link: "/Home/Premium" },
-  { name: "Verified Orgs", icons: <AiFillThunderbolt />, link: "/Home/Verified" },
-  { name: "Profile", icons: <FaUserAlt />, link: "/Home/Profile" }
+  { name: "Home", icons: <IoMdHome className='fill-white size-4'/>, link: "/Home" },
+  { name: "Explore", icons: <FaSearch className='fill-white size-4'/>, link: "/Home/Explore" },
+  // { name: "Notifications", icons: <IoNotifications />, link: "/Home/notification" },
+  { name: "Grok", icons: <GiPirateCaptain className='fill-white size-4'/>, link: "/Home/Grok" },
+  { name: "Communities", icons: <MdPeopleAlt className='fill-white size-4'/>, link: "/Home/Communities" },
+  // { name: "Premium", icons: <AiFillCreditCard className='fill-white'/>, link: "/Home/Premium" },
+  { name: "Verified Orgs", icons: <AiFillThunderbolt className='fill-white size-4'/>, link: "/Home/Verified" },
+  { name: "Profile", icons: <FaUserAlt className='fill-white size-4' />, link: "/Home/Profile" }
 ]
 
 
@@ -53,15 +54,25 @@ export default function Home() {
   }, [isMobile])
 
   return (
-    <div className='px-1 border-l border-r border-white'>
-      <PostComponent />
+    <div className='px-1    md:border-l md:border-r border-white'>
+      <div  className="hidden md:block">
+
+      <PostComponent/>
+      </div>
+      <div className='block md:hidden'>
+        <CreatePostButton/>
+
+      </div>
+
+
+
       <ShowPost />
 
       {isMobile && (
         <div className='flex items-center justify-center'>
           <div
-            className={`fixed bottom-1 h-10 w-[90vw] flex justify-between mx-auto bg-gray-300 rounded-full z-10 px-2 py-2 text-black transition-opacity duration-300 ${
-              showMenu ? 'opacity-100' : 'opacity-0'
+            className={`fixed bottom-0 border-t-1 border-gray-800 h-10 w-[100vw] shadow-md flex justify-between mx-auto bg-black  z-10 px-2 py-2 text-black transition-opacity duration-300 ${
+              showMenu ? 'block' : 'hidden'
             }`}
           >
             {options.map((el, i) => (

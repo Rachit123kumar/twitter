@@ -1,111 +1,47 @@
-import React, { useEffect, useState } from 'react'
-import ImageSlider from "../_components/ImageSlider"
-import TweetPoll from "./TweetPoll"
-import LikeCompo from "./LikeCompo"
+'use client';
 
+import React from 'react';
+import PostSHow from "../_components/postSHow";
 import { useSession } from 'next-auth/react';
-
 import { AiOutlineLoading } from 'react-icons/ai';
+import { useQuery } from '@tanstack/react-query';
 
 export default function ShowPost() {
-  const [tweets, setAllTweets] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("")
+  const { status, data: sessionData } = useSession();
 
+  // Fetch posts only when session is ready
+  const { data: tweets, isLoading, isError, error } = useQuery({
+    queryKey: ['posts', sessionData?.user?.email],
+    queryFn: async () => {
+      const res = await fetch(`/api/getPost?email=${sessionData?.user?.email}`);
+      if (!res.ok) throw new Error("Network response was not ok");
+      return res.json();
+    },
+    enabled: status === "authenticated", // Only fetch if logged in
+  });
 
-  const { status, data } = useSession()
-  console.log(data)
+  // Show loader
+  if (status === "loading" || isLoading) {
+    return (
+      <div className='h-[300px] w-full flex flex-col items-center justify-center'>
+        <AiOutlineLoading className='size-5 text-white h-10 w-full animate-spin' />
+        <div>Post Loading..</div>
+      </div>
+    );
+  }
 
-  useEffect(() => {
-
-    async function iam() {
-
-      try {
-
-        if (status === "loading" || status === "unauthenticated") {
-          return
-        }
-        console.log(data)
-        const res = await fetch(`/api/getPost?email=${data?.user?.email}`)
-        const ans = await res.json()
-
-        console.log(ans)
-        setAllTweets(ans)
-        setLoading(false)
-      } catch (err) {
-        setError(err.message);
-        setLoading(false);
-        iam()
-
-      }
-
-    }
-
-    iam()
-  }, [status, data])
-
-
-
-
-  if(status==="loading" || loading)return <div className='h-[300px] w-full flex items-center justify-center '>
-    <AiOutlineLoading  className='size-5 text-white h-10 w-full animate-spin' />
-  </div>
-
-
+  // Error handling
+  if (isError) {
+    return <div className="text-red-500">Error: {error.message}</div>;
+  }
 
   return (
-    <div className='text-white '>
-
-
-
-      <div>
-
-
-        {
-          tweets.length > 0 && tweets.map((el, i) => {
-            return <div key={i} className='border-b-2 border-gray-300 mt-2 mb-2'>
-              {
-                el.kind == 'CONTENT' && <div>
-                  <div>
-                    <div className='flex items-center gap-2 '>
-                      <div className='h-8 w-8 rounded-full bg-white overflow-hidden'>
-                        <img src={ el.author.profilePic} alt='profile image' className='object-contain' />
-                      </div>
-                      <div className='flex gap-1 items-center'>
-
-                            <span className='text-xs font-sans text-gray-400'>@{el.author.userName}</span>
-                      <p className=' font-sans text-sm text-blue-400 hover:underline cursor-pointer '>{el.author?.displayName}
-                      </p>
-                      </div>
-                  
-
-                    </div>
-                    <p className='text-white pl-2 text-sm font-sans'>{el.content}</p>
-                  </div>
-                  {
-                    el?.media && el?.media?.length > 0 && <ImageSlider images={el.media} />
-
-                  }
-
-
-                </div>
-              }
-              {
-                el.kind == 'POLL' && <TweetPoll poll={el.poll} author={el.author} tweetId={el._id} hasVoted={el.hasVoted} pollResult={el.pollResults} />
-              }
-
-
-              <LikeCompo tweetId={el._id} likeCount={el.likeCount} commentCount={el.commentCount} isLikedByMe={el.isLikedByMe} user={data.user} />
-
-
-
-            </div>
-          })
-        }
-
-      </div>
-
-
+    <div className='text-white'>
+      {tweets?.length > 0 ? (
+        <PostSHow tweets={tweets} data={sessionData} />
+      ) : (
+        <div>No posts found.</div>
+      )}
     </div>
-  )
+  );
 }

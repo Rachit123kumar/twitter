@@ -38,7 +38,7 @@ export default function ImageSlider({images}) {
     }
 
   return (
-    <div className='relative max-w-[700px]  mt-2'>
+    <div className='relative max-w-[700px]  mt-0'>
 
     <div className=' overflow-hidden flex w-full  relative'>
         {

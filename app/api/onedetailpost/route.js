@@ -23,18 +23,131 @@ export async function POST(req) {
     const userId = user._id;
 
     const result = await Tweet.aggregate([
-      {
-        $match: { _id: new mongoose.Types.ObjectId(postId) }
-      },
+      { $match: { _id: new mongoose.Types.ObjectId(postId) } },
+
+      // Fetch author info
       {
         $lookup: {
           from: "users",
           localField: "author",
           foreignField: "_id",
-          as: "author"
-        }
+          as: "author",
+        },
       },
       { $unwind: "$author" },
+
+      // Poll vote counts per option
+      {
+        $lookup: {
+          from: "pollvotes",
+          let: { tweetId: "$_id" },
+          pipeline: [
+            { $match: { $expr: { $eq: ["$Tweet", "$$tweetId"] } } },
+            {
+              $group: {
+                _id: "$optionIndex",
+                count: { $sum: 1 },
+              },
+            },
+          ],
+          as: "optionVotes",
+        },
+      },
+
+      // Get total votes and who voted
+      {
+        $lookup: {
+          from: "pollvotes",
+          let: { tweetId: "$_id" },
+          pipeline: [
+            { $match: { $expr: { $eq: ["$Tweet", "$$tweetId"] } } },
+            {
+              $group: {
+                _id: null,
+                totalVotes: { $sum: 1 },
+                votedUsers: { $addToSet: "$user" },
+              },
+            },
+          ],
+          as: "pollStats",
+        },
+      },
+      {
+        $addFields: {
+          pollStats: {
+            $ifNull: [{ $arrayElemAt: ["$pollStats", 0] }, { totalVotes: 0, votedUsers: [] }],
+          },
+        },
+      },
+      {
+        $addFields: {
+          totalVotes: "$pollStats.totalVotes",
+          hasVoted: { $in: [userId, "$pollStats.votedUsers"] },
+        },
+      },
+
+      // Calculate percentage per option
+      {
+        $addFields: {
+          pollResults: {
+            $map: {
+              input: { $range: [0, { $size: "$poll.options" }] },
+              as: "index",
+              in: {
+                optionIndex: "$$index",
+                voteCount: {
+                  $let: {
+                    vars: {
+                      matchedOption: {
+                        $first: {
+                          $filter: {
+                            input: "$optionVotes",
+                            cond: { $eq: ["$$this._id", "$$index"] },
+                          },
+                        },
+                      },
+                    },
+                    in: { $ifNull: ["$$matchedOption.count", 0] },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      {
+        $addFields: {
+          pollResults: {
+            $map: {
+              input: "$pollResults",
+              as: "r",
+              in: {
+                optionIndex: "$$r.optionIndex",
+                voteCount: "$$r.voteCount",
+                percentage: {
+                  $cond: [
+                    { $eq: ["$totalVotes", 0] },
+                    0,
+                    {
+                      $round: [
+                        {
+                          $multiply: [
+                            { $divide: ["$$r.voteCount", "$totalVotes"] },
+                            100,
+                          ],
+                        },
+                        1,
+                      ],
+                    },
+                  ],
+                },
+              },
+            },
+          },
+        },
+      },
+
+      // Comments
       {
         $lookup: {
           from: "comments",
@@ -46,19 +159,21 @@ export async function POST(req) {
                 from: "users",
                 localField: "author",
                 foreignField: "_id",
-                as: "author"
-              }
+                as: "author",
+              },
             },
-            { $unwind: "$author" }
+            { $unwind: "$author" },
           ],
-          as: "comments"
-        }
+          as: "comments",
+        },
       },
       {
         $addFields: {
-          commentCount: { $size: "$comments" }
-        }
+          commentCount: { $size: "$comments" },
+        },
       },
+
+      // Likes
       {
         $lookup: {
           from: "likes",
@@ -66,17 +181,17 @@ export async function POST(req) {
           pipeline: [
             { $match: { $expr: { $eq: ["$tweet", "$$tweetId"] } } },
           ],
-          as: "likes"
-        }
+          as: "likes",
+        },
       },
       {
         $addFields: {
           likeCount: { $size: "$likes" },
-          isLikedByMe: {
-            $in: [userId, "$likes.user"]
-          }
-        }
+          isLikedByMe: { $in: [userId, "$likes.user"] },
+        },
       },
+
+      // Final projection
       {
         $project: {
           content: 1,
@@ -86,17 +201,20 @@ export async function POST(req) {
           hastags: 1,
           createdAt: 1,
           author: {
-            name: 1,
+            displayName: 1,
             email: 1,
-            username: 1,
-            image: 1
+            userName: 1,
+            profilePic: 1,
           },
           comments: 1,
           commentCount: 1,
           likeCount: 1,
-          isLikedByMe: 1
-        }
-      }
+          isLikedByMe: 1,
+          hasVoted: 1,
+          pollResults: 1,
+          totalVotes: 1,
+        },
+      },
     ]);
 
     if (!result || result.length === 0) {
@@ -104,7 +222,6 @@ export async function POST(req) {
     }
 
     return NextResponse.json(result[0]);
-
   } catch (err) {
     console.error("Error in aggregation:", err);
     return NextResponse.json({ message: "Server error", error: err.message }, { status: 500 });
