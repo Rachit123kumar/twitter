@@ -1,13 +1,18 @@
 "use client"
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { FaArrowLeft } from "react-icons/fa6";
 import { RiTwitterXFill } from "react-icons/ri";
 import { RiVerifiedBadgeFill } from "react-icons/ri";
+import ShowPost from '../../_components/ShowPost';
+import PostSHow from '../../_components/postSHow';
+import axios from 'axios';
 
 export default function Profile() {
   const { status, data } = useSession()
+  const [loading,setLoading]=useState(false)
+  const [tweets,setTweets]=useState([])
   const router = useRouter()
 
 
@@ -18,6 +23,24 @@ export default function Profile() {
       router.push('/auth/signin')
     }
     console.log(data)
+
+    if(status=="loading"){
+      return
+    }
+    async function etData(){
+setLoading(true)
+      const res=await fetch(`/api/myposts?email=${data.user.email}`)
+     const ans=await res.json()
+     console.log(ans)
+     setTweets(ans)
+     setLoading(false)
+    }
+etData()
+
+
+
+
+
 
   }, [status])
 
@@ -43,7 +66,7 @@ export default function Profile() {
 
         <nav className='font-bold '>
           {data.user?.name}
-          <p className="text-gray-600 font-sans font-light ">100 posts </p>
+          <p className="text-gray-600 font-sans font-light ">{tweets.length || "loading"}posts</p>
         </nav>
       </div>
 
@@ -82,12 +105,21 @@ export default function Profile() {
           <p className='font-light px-3 '>React JS || Mongo|| Next Js || EC2 || Javascript</p>
 
       </div>
+      {!loading && <PostSHow tweets={tweets} data={data} />}
+        {
+        !loading && tweets.length==0 && <div className='text-white text-center '>
+          No post to show 
+        </div>
+      }
 
+
+    
 
 
 
 
 
     </div>
+    
   )
 }
