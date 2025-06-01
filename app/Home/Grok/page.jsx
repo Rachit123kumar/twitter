@@ -143,8 +143,8 @@ export default function GrOk() {
       <div className=''>
         {
           messages.map((el, i) => <div key={i} className='flex flex-col  mb-5'>
-            <p className=' py-2 px-1 mt-3 text-gray-500 rounded-md justify-self-end w-[90%]'>Quest:{el.question}</p>
-            <div className='mt-3 py-2 text-gray-500 text-sm px-1 prose prose-zinc  dark:prose-invert w-[700px]'>
+            <p className=' py-2 px-1 mt-3 text-gray-500 rounded-md justify-self-end w-[90%]'>Question:  {el.question}</p>
+            <div className='mt-3 py-2 text-gray-500 text-sm px-1 prose prose-zinc  dark:prose-invert max-w-[700px]'>
               <ReactMarkdown
 
                 remarkPlugins={[remarkGfm]}
@@ -160,7 +160,7 @@ export default function GrOk() {
 
 
 
-     <div className='sticky  bottom-3 left-0 right-0 px-4 flex items-center justify-center'>
+     <div className='sticky bottom-3 left-0 right-0 px-4 flex items-center justify-center'>
   <div className='flex w-full max-w-full items-center gap-2 bg-gray-900 px-3 py-2 rounded-full border border-gray-700'>
     <input
       className='flex-1 bg-transparent text-white px-2 outline-none placeholder-gray-400'

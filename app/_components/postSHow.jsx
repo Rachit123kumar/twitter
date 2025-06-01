@@ -3,6 +3,9 @@ import ImageSlider from "../_components/ImageSlider"
 import TweetPoll from "./TweetPoll"
 import LikeCompo from "./LikeCompo"
 import { useRouter } from 'next/navigation'
+import UserName from "../_components/UserName"
+import { Separator } from "../../components/components/ui/separator"
+
 export default function PostSHow({tweets,data=null}) {
 
   const router=useRouter()
@@ -10,7 +13,7 @@ export default function PostSHow({tweets,data=null}) {
 
   return (<div>
 {    tweets.map((el, i) => {
-            return <div key={i} className='border-b-2 border-gray-300 mt-2 mb-2'>
+            return <div key={i} className=' mt-2 mb-2'>
               {
                 el.kind == 'CONTENT' && <div>
                   <div>
@@ -20,9 +23,7 @@ export default function PostSHow({tweets,data=null}) {
                       </div>
                       <div className='flex gap-1 items-center'>
 
-                            <span className='text-xs font-sans text-gray-400'>@{el.author.userName}</span>
-                      <p className=' font-sans text-sm text-blue-400 hover:underline cursor-pointer '>{el.author?.displayName}
-                      </p>
+                       <UserName author={el.author}/>
                       </div>
                   
 
@@ -44,7 +45,7 @@ export default function PostSHow({tweets,data=null}) {
 
               <LikeCompo tweetId={el._id} likeCount={el.likeCount} commentCount={el.commentCount} isLikedByMe={el.isLikedByMe} user={data.user} />
 
-
+<Separator/>
 
             </div>
           })}

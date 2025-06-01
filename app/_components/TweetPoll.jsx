@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 
 import React, { useState } from 'react'
 import { AiOutlineLoading } from 'react-icons/ai'
+import UserName from './UserName'
 
 
 export default function TweetPoll({ poll, author, tweetId, hasVoted, pollResult }) {
@@ -80,14 +81,12 @@ function valeu(i) {
 
                     <img src={author.profilePic} alt="profile image" className='object-cover' />
                 </div>
-                <p>{author.displayName}
-                    <span className='text-gray-600 text-sm ml-2'>{author.userName}</span>
-                </p>
+              <UserName author={author}/>
 
             </div>
             <div className='pl-4'>
 
-                <p className='cursor-pointer' >{poll.Question}</p>
+                <p className='cursor-pointer ' >{poll.Question}</p>
                 <div className='flex flex-col gap-y-2 mb-3 mt-2'>
 
 

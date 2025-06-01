@@ -11,6 +11,7 @@ import { AiFillCreditCard, AiFillThunderbolt } from "react-icons/ai";
 import { FaUserAlt } from "react-icons/fa";
 import { useRouter } from 'next/navigation';
 import CreatePostButton from "../_components/createPostButton"
+import SmallScreenTopNav from '../_components/smallScreenTopNav';
 
 const options = [
   { name: "Home", icons: <IoMdHome className='fill-white size-4'/>, link: "/Home" },
@@ -19,7 +20,7 @@ const options = [
   { name: "Grok", icons: <GiPirateCaptain className='fill-white size-4'/>, link: "/Home/Grok" },
   { name: "Communities", icons: <MdPeopleAlt className='fill-white size-4'/>, link: "/Home/Communities" },
   // { name: "Premium", icons: <AiFillCreditCard className='fill-white'/>, link: "/Home/Premium" },
-  { name: "Verified Orgs", icons: <AiFillThunderbolt className='fill-white size-4'/>, link: "/Home/Verified" },
+  // { name: "Verified Orgs", icons: <AiFillThunderbolt className='fill-white size-4'/>, link: "/Home/Verified" },
   { name: "Profile", icons: <FaUserAlt className='fill-white size-4' />, link: "/Home/Profile" }
 ]
 
@@ -59,8 +60,9 @@ export default function Home() {
 
       <PostComponent/>
       </div>
-      <div className='block md:hidden'>
-        <CreatePostButton/>
+      <div className='block md:hidden border-b border-gray-400  mb-2 pb-1'>
+        {/* <CreatePostButton/> */}
+        <SmallScreenTopNav/>
 
       </div>
 
