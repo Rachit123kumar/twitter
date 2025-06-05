@@ -10,26 +10,26 @@ export async function POST(req) {
         const { userId, name, category, bio, rules, privacy ,backgroundPhoto,coverPhoto} = body;
         console.log(userId, name, category, bio, rules, privacy, backgroundPhoto, coverPhoto)
 
-        // const community=await Community.create({
-        //     name,
-        //     coverPhoto,
-        //     backgroundPhoto,
-        //     owner:userId,
-        //     bio,
-        //     category,
-        //     privacy,
-        //     rules
+        const community=await Community.create({
+            name,
+            coverPhoto,
+            backgroundPhoto,
+            owner:userId,
+            bio,
+            category,
+            privacy,
+            rules
 
 
 
-        // })
-
-
-        // return NextResponse.json(community)
-        return NextResponse.json({
-            message: "nice"
         })
 
+
+        return NextResponse.json({
+            community,
+            message:"success"
+        })
+        
     } catch (err) {
         console.log(err)
 

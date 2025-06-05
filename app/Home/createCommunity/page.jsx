@@ -15,6 +15,7 @@ import { useForm } from "react-hook-form";
 import { BiSolidSelectMultiple } from "react-icons/bi";
 import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
+import { MdDoNotDisturb } from "react-icons/md";
 
 export default function Page() {
 
@@ -27,9 +28,10 @@ export default function Page() {
     const coverImageRef = useRef();
     const backgroundImageRef = useRef();
 
-    const [states, setStates] = useState({})
+
     const [loading, setLoading] = useState(false);
-    const [images, setImages] = useState([])
+    const [nameChecking,setNamChecking]=useState(false)
+
 
     const { register, handleSubmit, watch, formState: { errors, isSubmitted } } = useForm()
 
@@ -78,18 +80,18 @@ export default function Page() {
 
 
     async function handleChangeCover(e) {
-        console.log(e.target.files[0])
+        // console.log(e.target.files[0])
         const file = e.target.files[0];
 
         if (!file) {
             alert("please choose file ")
             return
         }
-        console.log(file.size)
+        // console.log(file.size)
 
         const compressedFile = await imageCompression(file, options);
 
-        console.log(compressedFile.size)
+        // console.log(compressedFile.size)
 
 
 
@@ -113,8 +115,8 @@ export default function Page() {
             }
         })
 
-        console.log(res)
-        setImages(prev => [...prev, { coverPhoto: res.data.result.secure_url }])
+        // console.log(res)
+        // setImages(prev => [...prev, { coverPhoto: res.data.result.secure_url }])
         imagesMap.current.set("coverPhoto", res.data.result.secure_url)
 
 
@@ -133,13 +135,13 @@ export default function Page() {
             alert("please choose image file ")
             return
         }
-        console.log(file.size % 1024)
+        // console.log(file.size % 1024)
 
 
 
         const compressedFile = await imageCompression(file, options);
 
-        console.log(compressedFile.size % 1024)
+        // console.log(compressedFile.size % 1024)
 
 
         const reader = new FileReader();
@@ -164,9 +166,9 @@ export default function Page() {
             setLoading(false)
 
 
-            console.log(res)
+            // console.log(res)
 
-            setImages(prev => [...prev, { backgroundPhoto: res.data.result.secure_url }])
+            // setImages(prev => [...prev, { backgroundPhoto: res.data.result.secure_url }])
             imagesMap.current.set("backgroundPhoto", res.data.result.secure_url)
 
         } catch (err) {
@@ -182,7 +184,7 @@ export default function Page() {
 
 
     useEffect(() => {
-        console.log(data)
+        // console.log(data && data)
     }, [status])
 
 
@@ -197,26 +199,30 @@ export default function Page() {
         // debounce api call 
         if (typingTimeOut) clearTimeout(typingTimeOut);
 
+        setNamChecking(true)
         const timeOut = setTimeout(async () => {
-            setLoading(true)
+            setNamChecking(true)
             try {
                 const res = await axios.post('/api/checkAvailableNamePage', {
                     name: nameValue
                 })
-                console.log(res)
+                // console.log(res)
 
                 setAvailable(res.data.available)
-                setLoading(false)
+                // setLoading(false)
+                setNamChecking(false)
 
             } catch (err) {
                 console.error("check failed")
                 setAvailable(null)
-                setLoading(false)
+                // setLoading(false)
+                setNamChecking(false)
             }
         }, 1000)
 
         setTypingTimeOut(timeOut)
-        setLoading(false)
+        // setLoading(false)
+        setNamChecking(false)
 
 
 
@@ -243,20 +249,36 @@ export default function Page() {
             alert("please choose an image");
             return;
 
+
         }
-        console.log(data, privacy, coverImage, backgrundImage);
+        if(!data){
+            return ;
+        }
+        // console.log(data, privacy, imagesMap.current.get("coverPhoto"),imagesMap.current.get("backgroundPhoto"))
 
+   
 
+try{
         const res = await axios.post('/api/createCommunity', {
             ...data,
-            backgroundPhoto: images.backgroundPhoto,
-            coverPhoto: images.coverPhoto,
+            backgroundPhoto: imagesMap.current.get("backgroundPhoto"),
+            coverPhoto: imagesMap.current.get("coverPhoto"),
             privacy: privacy,
             userId:userSession.user.id
 
 
         })
-        console.log(res)
+    
+    toast.success("Sucessfully created")
+    router.push(`/Home/Communities/${res.data.community.name}`)
+    
+    console.log(res)
+    
+    }
+        catch(err){
+            toast.error("error occured while creating community")
+        }
+
 
 
 
@@ -348,8 +370,12 @@ export default function Page() {
                             {
                                 el.name == "name" && available && <span><TiTick className=" size-5  text-green-400" /> </span>
                             }
+                        
                             {
-                                el.name == "name" && loading && <span><TbLoader3 className=" size-5 animate-spin text-green-400" /> </span>
+                                el.name == "name" && nameChecking && <span><TbLoader3 className=" size-5 animate-spin text-green-400" /> </span>
+                            }
+                            {
+                                el.name == "name" && !nameChecking && !available && <span>< MdDoNotDisturb className=" size-5  text-red-500" /> </span>
                             }
 
 
@@ -369,7 +395,7 @@ export default function Page() {
 
 
                     <div className="gap-2 flex mt-3 mb-3">
-                        <button className='text-center border-1 border-gray-700 px-6 py-1 rounded-full text-sm cursor-pointer disabled:bg-red-500' disabled={!available || loading} type="submit">create</button>
+                        <button className='text-center border-1 border-gray-700 px-6 py-1 rounded-full text-sm cursor-pointer disabled:bg-red-500' disabled={!available || nameChecking || loading } type="submit">create</button>
                         <button className='text-center border-1 border-gray-700 px-6 py-1 rounded-full text-sm cursor-pointer md:hidden' onClick={() => router.push('/Home')}>Back</button>
                     </div>
                 </form>
