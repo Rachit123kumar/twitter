@@ -64,76 +64,12 @@ export default function GrOk() {
         </div>
       </div>
 
-      {/* <div className='max-w-[762px] md:max-w-[700px] mt-5 text-white flex mx-auto pb-2  gap-2  justify-center bg-gray-700 rounded-full px-2 py-2 items-center'>
-        <div>
-          <img className='rounded-full ring-2 ring-blue-400 ' src={'/boy.png'} height={40} width={40} />
-
-        </div>
-        <div>
-          <p className='font-bold text-xs' >
-            Draw me
-
-          </p>
-          <p className='text-gray-400'>Click here to try a random style </p>
-        </div>
-
-
-      </div> */}
 
       <div className='text-white mt-3 text-center '>
         <p className='text-white px-1 text-sm'>Grok 3 is here . </p>
         <p className='text-gray-600 px-1'>Try our new Features : DeepSearch, Think and Edit images</p>
 
-        {/* <div className='flex flex-col lg:flex-row gap-4 mt-5 text-xs '>
-
-          <div className='bg-gray-700 rounded-md px-3 py-3 text-xs'>
-            <span className='inline-block '>
-              <span className='flex gap-2  items-center border-1 px-1 bg-gray-800 rounded-lg '>
-
-                <SiDeepin />
-                Deep Search
-              </span>
-
-            </span>
-
-
-            <p className='mt-1'>
-              Search deeply to deliver detailed, well-reasoned answers with Grok’s rapid, agentic search.
-            </p>
-          </div>
-          <div className='bg-gray-700 rounded-md px-3 py-3 '>
-            <span className='inline-block '>
-              <span className='flex gap-2  items-center border-1 px-1 bg-gray-800 rounded-lg '>
-
-                <SiDeepin />
-                Deep Search
-              </span>
-
-            </span>
-
-
-            <p className='mt-1'>
-              Search deeply to deliver detailed, well-reasoned answers with Grok’s rapid, agentic search.
-            </p>
-          </div>
-          <div className='bg-gray-700 rounded-md px-3 py-3 '>
-            <span className='inline-block '>
-              <span className='flex gap-2  items-center border-1 px-1 bg-gray-800 rounded-lg '>
-
-                <SiDeepin />
-                Deep Search
-              </span>
-
-            </span>
-
-
-            <p className='mt-1'>
-              Search deeply to deliver detailed, well-reasoned answers with Grok’s rapid, agentic search.
-            </p>
-          </div>
-
-
-        </div> */}
+       
 
 
       </div>

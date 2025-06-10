@@ -5,7 +5,7 @@ import { IoMdHome } from "react-icons/io";
 import { FaSearch } from "react-icons/fa"
 import { IoNotifications } from "react-icons/io5";
 import { MdPeopleAlt } from "react-icons/md";
-import { GiPirateCaptain } from "react-icons/gi";
+// import { GiPirateCaptain } from "react-icons/gi";
 import { AiFillCreditCard } from "react-icons/ai";
 import { AiFillThunderbolt } from "react-icons/ai";
 import { FaUserAlt } from "react-icons/fa";
@@ -13,7 +13,7 @@ import { FaXTwitter } from "react-icons/fa6";
 import { useRouter } from 'next/navigation';
 import { IoLogOut } from "react-icons/io5";
 import { signOut } from 'next-auth/react';
-
+import { ImLab } from "react-icons/im";
 
 
 
@@ -35,8 +35,8 @@ export default function NavBar() {
         link: "/Home/notification"
     },
     {
-        name: "Grok",
-        icons: <GiPirateCaptain />,
+        name: "Ai",
+        icons: <ImLab />,
         link: "/Home/Grok"
 
     }, {

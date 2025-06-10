@@ -41,7 +41,7 @@ export default function Providers({ children }) {
   
           {children}
 </UserContext.Provider>
-          <ReactQueryDevtools initialIsOpen={false}/>
+          <ReactQueryDevtools initialIsOpen={true}/>
         </QueryClientProvider>
         </Provider>
 
